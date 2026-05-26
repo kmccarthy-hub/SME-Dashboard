@@ -3,1219 +3,597 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Engagement Dashboard | Loyalty Platform</title>
-    
-    <!-- Tailwind CSS CDN -->
-    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
-    
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
-    <!-- Lucide Icons CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
-    
-    <!-- Google Fonts for Premium Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
+    <title>RetailPulse - B2B SaaS Loyalty Engagement Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        * {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        
-        .font-mono {
-            font-family: 'JetBrains Mono', monospace;
-        }
-        
-        /* Dark Mode with Premium Aesthetic */
-        :root {
-            --bg-primary: #0f1117;
-            --bg-secondary: #161b22;
-            --bg-tertiary: #21262d;
-            --text-primary: #e6edf3;
-            --text-secondary: #8b949e;
-            --border-color: #30363d;
-            --accent-primary: #58a6ff;
-            --accent-secondary: #79c0ff;
-            --accent-success: #3fb950;
-            --accent-warning: #d29922;
-            --accent-danger: #f85149;
-            --accent-purple: #bc8ef8;
-            --accent-cyan: #56d4dd;
-        }
-        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body {
-            background: linear-gradient(135deg, var(--bg-primary) 0%, #0c0f13 100%);
-            color: var(--text-primary);
-            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
         }
-        
-        /* Subtle grid pattern background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(0deg, transparent 24%, rgba(88, 166, 255, 0.05) 25%, rgba(88, 166, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(88, 166, 255, 0.05) 75%, rgba(88, 166, 255, 0.05) 76%, transparent 77%, transparent),
-                linear-gradient(90deg, transparent 24%, rgba(88, 166, 255, 0.05) 25%, rgba(88, 166, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(88, 166, 255, 0.05) 75%, rgba(88, 166, 255, 0.05) 76%, transparent 77%, transparent);
-            background-size: 80px 80px;
-            pointer-events: none;
-            z-index: -1;
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
         }
-        
-        /* Smooth scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #111827;
         }
-        
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-secondary);
-        }
-        
-        /* Premium Card Design */
-        .premium-card {
-            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            backdrop-filter: blur(20px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .premium-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(88, 166, 255, 0.3), transparent);
-            pointer-events: none;
-        }
-        
-        .premium-card:hover {
-            border-color: var(--accent-primary);
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px rgba(88, 166, 255, 0.1);
-        }
-        
-        /* Metric Cards */
-        .metric-card {
-            padding: 24px;
-        }
-        
-        .metric-label {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-        }
-        
-        .metric-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1.2;
-            margin-bottom: 8px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-        
-        .metric-change {
-            font-size: 13px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .metric-change.positive {
-            color: var(--accent-success);
-        }
-        
-        .metric-change.negative {
-            color: var(--accent-danger);
-        }
-        
-        /* Filter Button Styles */
-        .filter-btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-        
-        .filter-btn:hover {
-            border-color: var(--accent-primary);
-            background: var(--bg-tertiary);
-        }
-        
-        .filter-btn.active {
-            background: var(--accent-primary);
-            border-color: var(--accent-primary);
-            color: var(--bg-primary);
-        }
-        
-        /* Chart Container */
-        .chart-container {
-            position: relative;
-            height: 300px;
-            margin-bottom: 0;
-        }
-        
-        .full-height-chart {
-            height: 100%;
-        }
-        
-        /* Section Headers */
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-        
-        .section-header h2 {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 0;
-        }
-        
-        .section-header svg {
-            width: 20px;
-            height: 20px;
-            color: var(--accent-primary);
-        }
-        
-        /* Funnel Chart */
-        .funnel-item {
-            margin-bottom: 16px;
-        }
-        
-        .funnel-bar {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-        
-        .funnel-label {
-            font-size: 13px;
-            color: var(--text-secondary);
-            min-width: 160px;
-            white-space: nowrap;
-        }
-        
-        .funnel-percentage {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-primary);
-            font-family: 'JetBrains Mono', monospace;
-            min-width: 40px;
-            text-align: right;
-        }
-        
-        .funnel-bar-container {
-            flex: 1;
-            height: 28px;
-            background: var(--bg-tertiary);
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .funnel-fill {
-            height: 100%;
-            border-radius: 5px;
-            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            color: white;
-            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-        }
-        
-        /* At-Risk Table */
-        .risk-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        
-        .risk-table thead {
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .risk-table th {
-            padding: 12px 16px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-        }
-        
-        .risk-table td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-primary);
-        }
-        
-        .risk-table tr:hover {
-            background-color: rgba(88, 166, 255, 0.05);
-        }
-        
-        .risk-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .risk-badge.critical {
-            background-color: rgba(248, 81, 73, 0.15);
-            color: var(--accent-danger);
-        }
-        
-        .risk-badge.warning {
-            background-color: rgba(210, 153, 34, 0.15);
-            color: var(--accent-warning);
-        }
-        
-        /* Engagement Score Ring */
-        .engagement-score-ring {
-            width: 120px;
-            height: 120px;
-            position: relative;
-            margin: 0 auto 20px;
-        }
-        
-        .engagement-score-value {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-        
-        .engagement-score-value .value {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--accent-success);
-            font-family: 'JetBrains Mono', monospace;
-        }
-        
-        .engagement-score-value .unit {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-        
-        /* Animations */
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        @keyframes pulse-glow {
-            0%, 100% {
-                box-shadow: 0 0 20px rgba(88, 166, 255, 0.3);
-            }
-            50% {
-                box-shadow: 0 0 40px rgba(88, 166, 255, 0.5);
-            }
-        }
-        
-        .animate-slide-up {
-            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        
-        .animate-slide-left {
-            animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        
-        .card-1 { animation-delay: 0.1s; }
-        .card-2 { animation-delay: 0.2s; }
-        .card-3 { animation-delay: 0.3s; }
-        .card-4 { animation-delay: 0.4s; }
-        .card-5 { animation-delay: 0.5s; }
-        .card-6 { animation-delay: 0.6s; }
-        
-        /* Responsive adjustments */
-        @media (max-width: 1024px) {
-            .metric-value {
-                font-size: 24px;
-            }
-            
-            .section-header h2 {
-                font-size: 16px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .metric-card {
-                padding: 16px;
-            }
-            
-            .metric-value {
-                font-size: 20px;
-            }
-            
-            .chart-container {
-                height: 250px;
-            }
-        }
-        
-        /* Header styling */
-        .dashboard-header {
-            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-            border-bottom: 1px solid var(--border-color);
-            backdrop-filter: blur(20px);
-        }
-        
-        .header-content {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 24px 32px;
-        }
-        
-        .header-title h1 {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 0;
-            margin-bottom: 8px;
-        }
-        
-        .header-title p {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin: 0;
-        }
-        
-        /* Filter section styling */
-        .filter-section {
-            margin-top: 24px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .filter-group label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .filter-group .filter-options {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        /* Main content area */
-        .dashboard-content {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 32px;
-        }
-        
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-        
-        .dashboard-grid.large-cards {
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        }
-        
-        .section-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-        
-        .full-width {
-            grid-column: 1 / -1;
-        }
-        
-        /* Stat badge */
-        .stat-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            background-color: rgba(88, 166, 255, 0.1);
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--accent-secondary);
-            margin-top: 12px;
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 3px;
         }
     </style>
 </head>
-<body>
-    <!-- Header -->
-    <header class="dashboard-header sticky top-0 z-50">
-        <div class="header-content">
-            <div class="header-title">
-                <h1>Customer Engagement Dashboard</h1>
-                <p>Real-time insights into loyalty app adoption, engagement, and customer journey progression</p>
+<body class="text-gray-100 antialiased h-screen flex flex-col overflow-hidden">
+
+    <header class="bg-gray-900 border-b border-gray-800 h-16 min-h-16 flex items-center justify-between px-6 z-10">
+        <div class="flex items-center space-x-3">
+            <div class="bg-indigo-600 p-2 rounded-xl text-white">
+                <i data-lucide="sparkles" class="w-6 h-6"></i>
             </div>
-            
-            <!-- Filters -->
-            <div class="filter-section">
-                <!-- Date Range Filter -->
-                <div class="filter-group">
-                    <label>Date Range</label>
-                    <div class="filter-options">
-                        <button class="filter-btn active" data-filter="dateRange" data-value="7">Last 7 Days</button>
-                        <button class="filter-btn" data-filter="dateRange" data-value="30">Last 30 Days</button>
-                        <button class="filter-btn" data-filter="dateRange" data-value="90">Last 90 Days</button>
-                    </div>
+            <div>
+                <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                    RetailPulse <span class="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full font-medium border border-indigo-500/30">B2B SaaS</span>
+                </h1>
+                <p class="text-xs text-gray-400">Shopper Engagement Analytics Platform</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2 bg-gray-800/60 px-3 py-1.5 rounded-lg border border-gray-700 text-xs">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-gray-300 font-medium">Data Pipeline Live</span>
+            </div>
+            <div class="h-8 w-px bg-gray-800"></div>
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-sm text-white">
+                    M
                 </div>
-                
-                <!-- Retailer Segment Filter -->
-                <div class="filter-group">
-                    <label>Retailer Segment</label>
-                    <div class="filter-options">
-                        <button class="filter-btn active" data-filter="segment" data-value="all">All Segments</button>
-                        <button class="filter-btn" data-filter="segment" data-value="grocery">Grocery</button>
-                        <button class="filter-btn" data-filter="segment" data-value="fashion">Fashion</button>
-                        <button class="filter-btn" data-filter="segment" data-value="electronics">Electronics</button>
-                    </div>
-                </div>
-                
-                <!-- User Cohort Filter -->
-                <div class="filter-group">
-                    <label>User Cohort</label>
-                    <div class="filter-options">
-                        <button class="filter-btn active" data-filter="cohort" data-value="all">All Users</button>
-                        <button class="filter-btn" data-filter="cohort" data-value="new">New Users</button>
-                        <button class="filter-btn" data-filter="cohort" data-value="power">Power Shoppers</button>
-                        <button class="filter-btn" data-filter="cohort" data-value="churn">Churn-Risk</button>
-                    </div>
-                </div>
+                <span class="text-sm font-medium text-gray-300">Store Manager</span>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="dashboard-content">
-        <!-- Key Metrics Row -->
-        <div class="dashboard-grid large-cards">
-            <!-- DAU/MAU Metric -->
-            <div class="premium-card metric-card animate-slide-up card-1">
-                <div class="metric-label">Stickiness (DAU/MAU)</div>
-                <div class="metric-value" id="metric-stickiness">32.5%</div>
-                <div class="metric-change positive">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                        <polyline points="17 6 23 6 23 12"></polyline>
-                    </svg>
-                    <span>+4.2% from last week</span>
-                </div>
-            </div>
-
-            <!-- Average Session Duration Metric -->
-            <div class="premium-card metric-card animate-slide-up card-2">
-                <div class="metric-label">Avg Session Duration</div>
-                <div class="metric-value" id="metric-session">4m 32s</div>
-                <div class="metric-change positive">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                        <polyline points="17 6 23 6 23 12"></polyline>
-                    </svg>
-                    <span>+18 seconds vs avg</span>
-                </div>
-            </div>
-
-            <!-- Activation Rate Metric -->
-            <div class="premium-card metric-card animate-slide-up card-3">
-                <div class="metric-label">Activation Rate</div>
-                <div class="metric-value" id="metric-activation">61.4%</div>
-                <div class="metric-change positive">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                        <polyline points="17 6 23 6 23 12"></polyline>
-                    </svg>
-                    <span>+3.8% this period</span>
-                </div>
-            </div>
-
-            <!-- Time-to-Value Metric -->
-            <div class="premium-card metric-card animate-slide-up card-4">
-                <div class="metric-label">Time-to-Value (TTV)</div>
-                <div class="metric-value" id="metric-ttv">2.4d</div>
-                <div class="metric-change positive">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
-                        <polyline points="17 18 23 18 23 12"></polyline>
-                    </svg>
-                    <span>-0.3 days faster</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Feature Adoption & Engagement Score Row -->
-        <div class="section-row">
-            <!-- Feature Adoption -->
-            <div class="premium-card animate-slide-up card-5" style="padding: 24px;">
-                <div class="section-header">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                    <h2>Feature Adoption Rates</h2>
+    <div class="flex flex-1 overflow-hidden">
+        
+        <aside class="w-64 bg-gray-950 border-r border-gray-850 p-5 flex flex-col justify-between overflow-y-auto">
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Control Dashboard</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">Adjust controls to filter data sets across your active retailer cohorts and shopper populations.</p>
                 </div>
                 
-                <div id="featureAdoptionContainer">
-                    <!-- Populated by JavaScript -->
-                </div>
-            </div>
+                <hr class="border-gray-800">
 
-            <!-- Engagement Score -->
-            <div class="premium-card animate-slide-up card-6" style="padding: 24px;">
-                <div class="section-header">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
-                    <h2>Engagement Score</h2>
-                </div>
-                
-                <div class="engagement-score-ring">
-                    <svg width="120" height="120" viewBox="0 0 120 120">
-                        <!-- Background ring -->
-                        <circle cx="60" cy="60" r="50" fill="none" stroke="var(--bg-tertiary)" stroke-width="8"></circle>
-                        <!-- Progress ring -->
-                        <circle id="engagementRing" cx="60" cy="60" r="50" fill="none" stroke="var(--accent-success)" stroke-width="8"
-                            stroke-linecap="round" style="stroke-dasharray: 314; stroke-dashoffset: 94; transform: rotate(-90deg); transform-origin: 60px 60px; transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></circle>
-                    </svg>
-                    <div class="engagement-score-value">
-                        <div class="value" id="engagementScoreValue">72</div>
-                        <div class="unit">/ 100</div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1.5 flex items-center gap-1.5">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5 text-indigo-400"></i> Date Timeline
+                        </label>
+                        <select id="filter-date" onchange="updateDashboardData()" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-indigo-500 transition">
+                            <option value="7">Last 7 Days</option>
+                            <option value="30" selected>Last 30 Days</option>
+                            <option value="90">Last 90 Days</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1.5 flex items-center gap-1.5">
+                            <i data-lucide="store" class="w-3.5 h-3.5 text-indigo-400"></i> Retailer Segment
+                        </label>
+                        <select id="filter-segment" onchange="updateDashboardData()" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-indigo-500 transition">
+                            <option value="all" selected>All Segments</option>
+                            <option value="grocery">Grocery & Supermarkets</option>
+                            <option value="fashion">Fashion & Apparel</option>
+                            <option value="electronics">Consumer Electronics</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1.5 flex items-center gap-1.5">
+                            <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-400"></i> Shopper Cohort
+                        </label>
+                        <select id="filter-cohort" onchange="updateDashboardData()" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-indigo-500 transition">
+                            <option value="all" selected>All Cohorts</option>
+                            <option value="new">Newly Onboarded</option>
+                            <option value="power">Power Shoppers</option>
+                            <option value="risk">Churn-Risk Profiles</option>
+                        </select>
                     </div>
                 </div>
-                
-                <div style="text-align: center;">
-                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
-                        Based on login frequency, feature usage, and redemption activity
+            </div>
+
+            <div class="bg-indigo-950/40 border border-indigo-900/50 rounded-xl p-3 mt-6">
+                <h4 class="text-xs font-semibold text-indigo-400 flex items-center gap-1 mb-1">
+                    <i data-lucide="target" class="w-3.5 h-3.5"></i> Profile Strategy Goal
+                </h4>
+                <p class="text-[11px] text-gray-400 leading-normal">
+                    Optimize engagement to transform standard random discounts into high-conversion targeted campaigns.
+                </p>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">App Stickiness Ratio</span>
+                        <div class="bg-indigo-500/10 p-2 rounded-lg text-indigo-400">
+                            <i data-lucide="zap" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline space-x-2">
+                        <span id="kpi-stickiness" class="text-2xl font-bold tracking-tight text-white">--</span>
+                        <span class="text-xs text-gray-400 font-medium">DAU/MAU</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                        <span id="trend-stickiness" class="text-emerald-400 flex items-center font-medium">--</span> vs previous period
                     </p>
-                    <div class="stat-badge">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                            <polyline points="17 6 23 6 23 12"></polyline>
-                        </svg>
-                        Healthy Status
+                </div>
+
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Avg Session Duration</span>
+                        <div class="bg-cyan-500/10 p-2 rounded-lg text-cyan-400">
+                            <i data-lucide="clock" class="w-4 h-4"></i>
+                        </div>
                     </div>
+                    <div class="flex items-baseline space-x-2">
+                        <span id="kpi-duration" class="text-2xl font-bold tracking-tight text-white">--</span>
+                        <span class="text-xs text-gray-400 font-medium">mins / session</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                        <span id="trend-duration" class="text-emerald-400 flex items-center font-medium">--</span> browsing offers
+                    </p>
+                </div>
+
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Activation Rate</span>
+                        <div class="bg-emerald-500/10 p-2 rounded-lg text-emerald-400">
+                            <i data-lucide="user-check" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline space-x-2">
+                        <span id="kpi-activation" class="text-2xl font-bold tracking-tight text-white">--</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                        <span id="trend-activation" class="text-emerald-400 font-medium">--</span> Profile completion/First scan
+                    </p>
+                </div>
+
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Time-to-Value (TTV)</span>
+                        <div class="bg-amber-500/10 p-2 rounded-lg text-amber-400">
+                            <i data-lucide="hourglass" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline space-x-2">
+                        <span id="kpi-ttv" class="text-2xl font-bold tracking-tight text-white">--</span>
+                        <span class="text-xs text-gray-400 font-medium">days avg</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                        From app download to first claim
+                    </p>
                 </div>
             </div>
-        </div>
 
-        <!-- Customer Journey & Push Notification Row -->
-        <div class="section-row">
-            <!-- Funnel Chart -->
-            <div class="premium-card animate-slide-up card-1" style="padding: 24px;">
-                <div class="section-header">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 3h16v5H4z"></path>
-                        <path d="M6 8h12v5H6z"></path>
-                        <path d="M8 13h8v5H8z"></path>
-                        <path d="M10 18h4v5h-4z"></path>
-                    </svg>
-                    <h2>Milestone Completion Funnel</h2>
-                </div>
-                
-                <div id="funnelContainer">
-                    <!-- Populated by JavaScript -->
-                </div>
-                
-                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
-                    <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">Total Conversions</p>
-                    <p style="font-size: 18px; font-weight: 700; color: var(--accent-success);">18,450 users</p>
-                </div>
-            </div>
-
-            <!-- Push Notification & Communication -->
-            <div class="premium-card animate-slide-up card-2" style="padding: 24px;">
-                <div class="section-header">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                    <h2>Communication Effectiveness</h2>
-                </div>
-                
-                <div style="display: flex; flex-direction: column; gap: 24px;">
-                    <!-- Push Notification -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 lg:col-span-1 flex flex-col justify-between">
                     <div>
-                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
-                            <p style="font-size: 13px; color: var(--text-secondary);">Push Notification Open Rate</p>
-                            <span style="font-size: 18px; font-weight: 700; color: var(--accent-primary); font-family: 'JetBrains Mono', monospace;" id="pushOpenRate">38.2%</span>
-                        </div>
-                        <div style="height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; border: 1px solid var(--border-color);">
-                            <div id="pushOpenBar" style="height: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); width: 38.2%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>
-                        </div>
+                        <h3 class="text-sm font-semibold text-white mb-1">Customer Journey Milestone Conversion</h3>
+                        <p class="text-xs text-gray-400 mb-4">Conversion drop-offs tracking physical interaction bottlenecks</p>
                     </div>
-                    
-                    <!-- Email Open Rate -->
-                    <div>
-                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
-                            <p style="font-size: 13px; color: var(--text-secondary);">Email Open Rate</p>
-                            <span style="font-size: 18px; font-weight: 700; color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace;" id="emailOpenRate">24.7%</span>
+                    <div class="space-y-4 py-2 flex-1 flex flex-col justify-center">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-300 font-medium">1. App Downloaded</span>
+                                <span id="funnel-v1" class="text-gray-400 font-semibold">100%</span>
+                            </div>
+                            <div class="w-full bg-gray-800 h-2.5 rounded-full overflow-hidden">
+                                <div id="funnel-b1" class="bg-indigo-500 h-full rounded-full transition-all duration-500" style="width: 100%"></div>
+                            </div>
                         </div>
-                        <div style="height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; border: 1px solid var(--border-color);">
-                            <div id="emailOpenBar" style="height: 100%; background: linear-gradient(90deg, var(--accent-cyan), #2dd4bf); width: 24.7%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-300 font-medium">2. Profile Account Created</span>
+                                <span id="funnel-v2" class="text-gray-400 font-semibold">82%</span>
+                            </div>
+                            <div class="w-full bg-gray-800 h-2.5 rounded-full overflow-hidden">
+                                <div id="funnel-b2" class="bg-indigo-400 h-full rounded-full transition-all duration-500" style="width: 82%"></div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <!-- In-App Message CTR -->
-                    <div>
-                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
-                            <p style="font-size: 13px; color: var(--text-secondary);">In-App Message CTR</p>
-                            <span style="font-size: 18px; font-weight: 700; color: var(--accent-purple); font-family: 'JetBrains Mono', monospace;" id="inAppCtr">52.6%</span>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-300 font-medium">3. First Physical Barcode Scan</span>
+                                <span id="funnel-v3" class="text-gray-400 font-semibold">61%</span>
+                            </div>
+                            <div class="w-full bg-gray-800 h-2.5 rounded-full overflow-hidden">
+                                <div id="funnel-b3" class="bg-purple-500 h-full rounded-full transition-all duration-500" style="width: 61%"></div>
+                            </div>
                         </div>
-                        <div style="height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; border: 1px solid var(--border-color);">
-                            <div id="inAppCtrBar" style="height: 100%; background: linear-gradient(90deg, var(--accent-purple), #c084fc); width: 52.6%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Charts Row - Support Tickets & Retention -->
-        <div class="section-row">
-            <!-- Support Ticket Trends -->
-            <div class="premium-card animate-slide-up card-3" style="padding: 24px;">
-                <div class="section-header">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        <line x1="9" y1="10" x2="15" y2="10"></line>
-                        <line x1="9" y1="14" x2="15" y2="14"></line>
-                    </svg>
-                    <h2>Support Ticket Trends</h2>
-                </div>
-                <div class="chart-container">
-                    <canvas id="supportTicketsChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Login Frequency & Retention -->
-            <div class="premium-card animate-slide-up card-4" style="padding: 24px;">
-                <div class="section-header">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="16" y1="1" x2="16" y2="5"></line>
-                        <line x1="8" y1="1" x2="8" y2="5"></line>
-                        <line x1="3" y1="9" x2="21" y2="9"></line>
-                    </svg>
-                    <h2>Login Frequency</h2>
-                </div>
-                <div class="chart-container">
-                    <canvas id="loginFrequencyChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- At-Risk Indicators Table -->
-        <div class="premium-card animate-slide-up card-5" style="padding: 24px;">
-            <div class="section-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <h2>At-Risk Retail Accounts (Engagement Drop >20%)</h2>
-            </div>
-            
-            <div style="overflow-x: auto;">
-                <table class="risk-table">
-                    <thead>
-                        <tr>
-                            <th>Store Name</th>
-                            <th>Segment</th>
-                            <th>Users</th>
-                            <th>Engagement Drop</th>
-                            <th>Avg Session Time</th>
-                            <th>Risk Level</th>
-                            <th>Last Active</th>
-                        </tr>
-                    </thead>
-                    <tbody id="riskTableBody">
-                        <!-- Populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        // ==========================================
-        // DASHBOARD STATE & FILTERS
-        // ==========================================
-        
-        let dashboardState = {
-            filters: {
-                dateRange: '7',
-                segment: 'all',
-                cohort: 'all'
-            },
-            data: {}
-        };
-
-        // Mock data generator with seed for consistency
-        function generateMockData(filters) {
-            const dateRange = parseInt(filters.dateRange);
-            const segment = filters.segment;
-            const cohort = filters.cohort;
-            
-            // Base multipliers based on filters
-            let baseMult = 1;
-            if (cohort === 'power') baseMult = 1.8;
-            if (cohort === 'new') baseMult = 0.6;
-            if (cohort === 'churn') baseMult = 0.4;
-            
-            if (segment === 'grocery') baseMult *= 1.2;
-            if (segment === 'fashion') baseMult *= 1.1;
-            if (segment === 'electronics') baseMult *= 1.15;
-            
-            const timeMultiplier = dateRange === 30 ? 1.1 : dateRange === 90 ? 1.2 : 1;
-            
-            return {
-                stickiness: Math.min(32.5 * baseMult * timeMultiplier, 85),
-                sessionDuration: Math.round(272 * baseMult * timeMultiplier), // seconds
-                activationRate: Math.min(61.4 + (baseMult * 10), 95),
-                timeToValue: Math.max(2.4 - (baseMult * 0.3), 0.8),
-                engagement: Math.round(72 * baseMult),
-                
-                // Feature adoption rates
-                features: {
-                    'Digital Receipts': Math.min(45 + (baseMult * 15), 92),
-                    'Store Locator': Math.min(38 + (baseMult * 12), 88),
-                    'Points Tracker': Math.min(67 + (baseMult * 10), 95)
-                },
-                
-                // Funnel data
-                funnel: [
-                    { label: 'App Downloaded', value: 250000, percent: 100 },
-                    { label: 'Account Created', value: 165000, percent: 66 },
-                    { label: 'First Scan Completed', value: 98500, percent: 39.4 },
-                    { label: 'First Discount Earned', value: 18450, percent: 7.4 }
-                ],
-                
-                // Communication metrics
-                pushOpenRate: 38.2 + (baseMult * 8),
-                emailOpenRate: 24.7 + (baseMult * 5),
-                inAppCtr: 52.6 + (baseMult * 10),
-                
-                // Support data
-                supportTickets: generateSupportTrendData(dateRange),
-                loginFrequency: generateLoginFrequencyData(dateRange),
-                
-                // At-risk accounts
-                atRiskAccounts: generateAtRiskData(segment, cohort)
-            };
-        }
-
-        function generateSupportTrendData(days) {
-            const labels = [];
-            const data = [];
-            for (let i = days; i > 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-                data.push(Math.floor(Math.random() * 45 + 15));
-            }
-            return { labels, data };
-        }
-
-        function generateLoginFrequencyData(days) {
-            const labels = [];
-            const userData = [];
-            for (let i = days; i > 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-                userData.push(Math.floor(Math.random() * 8000 + 12000));
-            }
-            return { labels, userData };
-        }
-
-        function generateAtRiskData(segment, cohort) {
-            const stores = [
-                { name: 'Sunset Market (Downtown)', seg: 'grocery', users: 12450 },
-                { name: 'Urban Fashion Hub', seg: 'fashion', users: 8200 },
-                { name: 'Tech Store (Mall)', seg: 'electronics', users: 5600 },
-                { name: 'Local Mart Express', seg: 'grocery', users: 9800 },
-                { name: 'Style Outlet', seg: 'fashion', users: 4300 },
-                { name: 'Electronics Plus', seg: 'electronics', users: 7100 }
-            ];
-
-            return stores
-                .filter(s => segment === 'all' || s.seg === segment)
-                .map((store, idx) => ({
-                    name: store.name,
-                    segment: store.seg.charAt(0).toUpperCase() + store.seg.slice(1),
-                    users: store.users,
-                    drop: Math.floor(Math.random() * 15 + 21),
-                    sessionTime: Math.round(Math.random() * 2 + 1.5),
-                    riskLevel: idx % 2 === 0 ? 'critical' : 'warning',
-                    lastActive: `${Math.floor(Math.random() * 5 + 1)}d ago`
-                }))
-                .slice(0, 5);
-        }
-
-        // ==========================================
-        // FILTER HANDLING
-        // ==========================================
-        
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const filterType = this.dataset.filter;
-                const filterValue = this.dataset.value;
-
-                // Remove active class from siblings
-                this.parentElement.querySelectorAll('.filter-btn').forEach(b => {
-                    b.classList.remove('active');
-                });
-
-                // Add active class to clicked button
-                this.classList.add('active');
-
-                // Update state
-                dashboardState.filters[filterType] = filterValue;
-
-                // Refresh dashboard
-                updateDashboard();
-            });
-        });
-
-        // ==========================================
-        // DASHBOARD UPDATE LOGIC
-        // ==========================================
-        
-        function updateDashboard() {
-            // Generate new data based on filters
-            dashboardState.data = generateMockData(dashboardState.filters);
-
-            // Update metrics
-            updateMetrics();
-            updateFeatureAdoption();
-            updateEngagementScore();
-            updateFunnel();
-            updateCommunicationMetrics();
-            updateSupportChart();
-            updateLoginFrequencyChart();
-            updateAtRiskTable();
-        }
-
-        function updateMetrics() {
-            const data = dashboardState.data;
-
-            // Stickiness
-            const stickinessEl = document.getElementById('metric-stickiness');
-            stickinessEl.textContent = data.stickiness.toFixed(1) + '%';
-
-            // Session Duration
-            const minutes = Math.floor(data.sessionDuration / 60);
-            const seconds = data.sessionDuration % 60;
-            document.getElementById('metric-session').textContent = `${minutes}m ${seconds}s`;
-
-            // Activation Rate
-            document.getElementById('metric-activation').textContent = data.activationRate.toFixed(1) + '%';
-
-            // Time-to-Value
-            document.getElementById('metric-ttv').textContent = data.timeToValue.toFixed(1) + 'd';
-        }
-
-        function updateFeatureAdoption() {
-            const container = document.getElementById('featureAdoptionContainer');
-            const features = dashboardState.data.features;
-
-            let html = '';
-            Object.entries(features).forEach((entry, idx) => {
-                const [name, adoption] = entry;
-                const colors = ['var(--accent-primary)', 'var(--accent-cyan)', 'var(--accent-purple)'];
-                const color = colors[idx];
-
-                html += `
-                    <div style="margin-bottom: 20px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span style="font-size: 13px; color: var(--text-secondary);">${name}</span>
-                            <span style="font-size: 13px; font-weight: 600; color: var(--text-primary); font-family: 'JetBrains Mono', monospace;">${adoption.toFixed(1)}%</span>
-                        </div>
-                        <div style="height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; border: 1px solid var(--border-color);">
-                            <div style="height: 100%; background: ${color}; width: ${adoption}%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        function updateEngagementScore() {
-            const score = dashboardState.data.engagement;
-            document.getElementById('engagementScoreValue').textContent = score;
-
-            // Calculate ring offset (314 = 2 * π * 50)
-            const offset = 314 * (1 - score / 100);
-            document.getElementById('engagementRing').style.strokeDashoffset = offset;
-        }
-
-        function updateFunnel() {
-            const container = document.getElementById('funnelContainer');
-            const funnel = dashboardState.data.funnel;
-            const colors = ['var(--accent-primary)', 'var(--accent-secondary)', 'var(--accent-cyan)', 'var(--accent-purple)'];
-
-            let html = '';
-            funnel.forEach((item, idx) => {
-                html += `
-                    <div class="funnel-item">
-                        <div class="funnel-bar">
-                            <div class="funnel-label">${item.label}</div>
-                            <div class="funnel-percentage">${item.percent.toFixed(1)}%</div>
-                            <div class="funnel-bar-container">
-                                <div class="funnel-fill" style="width: ${item.percent}%; background: linear-gradient(90deg, ${colors[idx]}, rgba(88, 166, 255, 0.3));">
-                                    ${item.value.toLocaleString()}
-                                </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-300 font-medium">4. Targeted Premium Offer Earned</span>
+                                <span id="funnel-v4" class="text-gray-400 font-semibold">39%</span>
+                            </div>
+                            <div class="w-full bg-gray-800 h-2.5 rounded-full overflow-hidden">
+                                <div id="funnel-b4" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 39%"></div>
                             </div>
                         </div>
                     </div>
-                `;
-            });
+                </div>
 
-            container.innerHTML = html;
-        }
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 lg:col-span-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-semibold text-white mb-1">In-App Feature Adoption Mix</h3>
+                        <p class="text-xs text-gray-400 mb-4">% of active users interacting with sub-modules</p>
+                    </div>
+                    <div class="relative flex items-center justify-center max-h-[180px]">
+                        <canvas id="chart-feature-adoption"></canvas>
+                    </div>
+                </div>
 
-        function updateCommunicationMetrics() {
-            const data = dashboardState.data;
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 lg:col-span-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-semibold text-white mb-1">Shopper Return Login Frequency</h3>
+                        <p class="text-xs text-gray-400 mb-4">Weekly digital interaction score thresholds</p>
+                    </div>
+                    <div class="relative flex items-center justify-center max-h-[180px]">
+                        <canvas id="chart-login-frequency"></canvas>
+                    </div>
+                </div>
+            </div>
 
-            document.getElementById('pushOpenRate').textContent = data.pushOpenRate.toFixed(1) + '%';
-            document.getElementById('pushOpenBar').style.width = data.pushOpenRate + '%';
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 lg:col-span-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-semibold text-white mb-1">Communication Channel Response</h3>
+                        <p class="text-xs text-gray-400 mb-4">Comparing reach open rates and call to action click-throughs</p>
+                    </div>
+                    <div class="relative flex items-center justify-center max-h-[180px]">
+                        <canvas id="chart-communication"></canvas>
+                    </div>
+                </div>
 
-            document.getElementById('emailOpenRate').textContent = data.emailOpenRate.toFixed(1) + '%';
-            document.getElementById('emailOpenBar').style.width = data.emailOpenRate + '%';
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 lg:col-span-2 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-semibold text-white mb-1">Support Ticket Trends & App Fault Inquiries</h3>
+                        <p class="text-xs text-gray-400 mb-3">Monitoring friction elements causing system dropout risks</p>
+                    </div>
+                    <div class="relative flex items-center justify-center max-h-[180px] w-full">
+                        <canvas id="chart-support-tickets" class="w-full"></canvas>
+                    </div>
+                </div>
+            </div>
 
-            document.getElementById('inAppCtr').textContent = data.inAppCtr.toFixed(1) + '%';
-            document.getElementById('inAppCtrBar').style.width = data.inAppCtr + '%';
-        }
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-800 gap-2">
+                    <div>
+                        <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                            <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-500"></i> At-Risk Retail Corporate Accounts & Shopper Dropping Outlets
+                        </h3>
+                        <p class="text-xs text-gray-400">Stores demonstrating &gt;20% drops in client interaction metrics week-over-week</p>
+                    </div>
+                    <span id="risk-count" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2.5 py-1 rounded-full font-medium self-start sm:self-center">
+                        -- accounts at risk
+                    </span>
+                </div>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse text-xs mt-3">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-gray-800">
+                                <th class="py-3 px-4 font-semibold">Retailer / Store ID</th>
+                                <th class="py-3 px-4 font-semibold">Segment</th>
+                                <th class="py-3 px-4 font-semibold text-center">Engagement Score</th>
+                                <th class="py-3 px-4 font-semibold text-right">Weekly Drop Status</th>
+                                <th class="py-3 px-4 font-semibold text-right">Primary Friction Core Issue</th>
+                            </tr>
+                        </thead>
+                        <tbody id="risk-table-body" class="divide-y divide-gray-800 text-gray-300">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
 
-        function updateAtRiskTable() {
-            const tbody = document.getElementById('riskTableBody');
-            const accounts = dashboardState.data.atRiskAccounts;
+        </main>
+    </div>
 
-            let html = '';
-            accounts.forEach(account => {
-                html += `
-                    <tr>
-                        <td><strong>${account.name}</strong></td>
-                        <td>${account.segment}</td>
-                        <td>${account.users.toLocaleString()}</td>
-                        <td>
-                            <span style="color: var(--accent-danger); font-weight: 600; font-family: 'JetBrains Mono', monospace;">
-                                -${account.drop}%
-                            </span>
-                        </td>
-                        <td>${account.sessionTime.toFixed(1)}m</td>
-                        <td>
-                            <span class="risk-badge ${account.riskLevel}">
-                                ${account.riskLevel === 'critical' ? '🔴 Critical' : '⚠️ Warning'}
-                            </span>
-                        </td>
-                        <td style="color: var(--text-secondary);">${account.lastActive}</td>
-                    </tr>
-                `;
-            });
+    <script>
+        // Global references to Chart structures for runtime resets and memory purging
+        let charts = {};
 
-            tbody.innerHTML = html;
-        }
-
-        // ==========================================
-        // CHARTS
-        // ==========================================
-        
-        const chartDefaults = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: true,
-                    labels: {
-                        color: 'var(--text-secondary)',
-                        font: { size: 12, weight: '500' },
-                        padding: 20
-                    }
-                }
+        // Mock database variations dependent on interaction selections to dynamically mutate layout calculations
+        const databaseMock = {
+            dateFilters: {
+                "7":  { scale: 0.92, ticketsMultiplier: 0.3, trendText: "+2.4%", trendColor: "text-emerald-400" },
+                "30": { scale: 1.00, ticketsMultiplier: 1.0, trendText: "+4.1%", trendColor: "text-emerald-400" },
+                "90": { scale: 1.14, ticketsMultiplier: 2.8, trendText: "-1.2%", trendColor: "text-rose-400" }
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        color: 'var(--text-secondary)',
-                        font: { size: 11 }
-                    },
-                    grid: {
-                        color: 'var(--border-color)',
-                        drawBorder: false
-                    }
-                },
-                x: {
-                    ticks: {
-                        color: 'var(--text-secondary)',
-                        font: { size: 11 }
-                    },
-                    grid: {
-                        display: false,
-                        drawBorder: false
-                    }
-                }
+            segments: {
+                "all": { baseStickiness: 42.5, baseDuration: 6.4, activation: 74, ttv: 4.2 },
+                "grocery": { baseStickiness: 56.8, baseDuration: 4.2, activation: 88, ttv: 2.1 },
+                "fashion": { baseStickiness: 34.2, baseDuration: 9.1, activation: 65, ttv: 5.4 },
+                "electronics": { baseStickiness: 21.5, baseDuration: 7.8, activation: 52, ttv: 8.9 }
+            },
+            cohorts: {
+                "all": { shift: 1.0, subText: "Active baseline user groups" },
+                "new": { shift: 0.85, subText: "High drop potential" },
+                "power": { shift: 1.45, subText: "Max loyalty utilization" },
+                "risk": { shift: 0.40, subText: "Critical engagement drop" }
             }
         };
 
-        let supportChart = null;
-        let loginChart = null;
+        // Static accounts data pool filtering base
+        const accountDataPool = [
+            { id: "MegaMart Supercenter #104", segment: "Grocery", score: 32, change: "-28.4%", issue: "Barcode scanning errors at POS kiosk" },
+            { id: "Urban Vogue Outfitters - Main St", segment: "Fashion", score: 41, change: "-22.1%", issue: "Push notification alert fatigue dropout" },
+            { id: "ElectroZone flagship hub", segment: "Electronics", score: 19, change: "-34.7%", issue: "High time-to-value on random points" },
+            { id: "GreenGrocer Organic Market", segment: "Grocery", score: 48, change: "-20.5%", issue: "Digital receipts printing latency" },
+            { id: "Avenue Apparel Center", segment: "Fashion", score: 38, change: "-25.9%", issue: "In-app discount coupon expiration bugs" }
+        ];
 
-        function updateSupportChart() {
-            const ctx = document.getElementById('supportTicketsChart').getContext('2d');
-            const supportData = dashboardState.data.supportTickets;
-
-            if (supportChart) {
-                supportChart.data.labels = supportData.labels;
-                supportChart.data.datasets[0].data = supportData.data;
-                supportChart.update();
-            } else {
-                supportChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: supportData.labels,
-                        datasets: [
-                            {
-                                label: 'Support Tickets',
-                                data: supportData.data,
-                                borderColor: 'var(--accent-primary)',
-                                backgroundColor: 'rgba(88, 166, 255, 0.1)',
-                                borderWidth: 2,
-                                fill: true,
-                                tension: 0.4,
-                                pointRadius: 4,
-                                pointBackgroundColor: 'var(--accent-primary)',
-                                pointBorderColor: 'var(--bg-secondary)',
-                                pointBorderWidth: 2,
-                                pointHoverRadius: 6
-                            }
-                        ]
-                    },
-                    options: {
-                        ...chartDefaults,
-                        plugins: {
-                            ...chartDefaults.plugins,
-                            legend: { display: false }
-                        }
-                    }
-                });
-            }
-        }
-
-        function updateLoginFrequencyChart() {
-            const ctx = document.getElementById('loginFrequencyChart').getContext('2d');
-            const loginData = dashboardState.data.loginFrequency;
-
-            if (loginChart) {
-                loginChart.data.labels = loginData.labels;
-                loginChart.data.datasets[0].data = loginData.userData;
-                loginChart.update();
-            } else {
-                loginChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: loginData.labels,
-                        datasets: [
-                            {
-                                label: 'Active Users',
-                                data: loginData.userData,
-                                backgroundColor: 'var(--accent-success)',
-                                borderColor: 'var(--accent-success)',
-                                borderWidth: 0,
-                                borderRadius: 6,
-                                hoverBackgroundColor: 'var(--accent-secondary)'
-                            }
-                        ]
-                    },
-                    options: {
-                        ...chartDefaults,
-                        plugins: {
-                            ...chartDefaults.plugins,
-                            legend: { display: false }
-                        }
-                    }
-                });
-            }
-        }
-
-        // ==========================================
-        // INITIALIZATION
-        // ==========================================
-        
-        // Initialize dashboard on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            updateDashboard();
+        // Initialization Pipeline Runner
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initializeCharts();
+            updateDashboardData();
         });
+
+        function initializeCharts() {
+            // Chart 1: Feature Adoption Bar configuration
+            const ctxAdoption = document.getElementById('chart-feature-adoption').getContext('2d');
+            charts.adoption = new Chart(ctxAdoption, {
+                type: 'bar',
+                data: {
+                    labels: ['Digital Receipts', 'Store Locator', 'Points Tracker', 'Quick Redeem'],
+                    datasets: [{
+                        label: 'Adoption Rate %',
+                        backgroundColor: ['#6366f1', '#22d3ee', '#a855f7', '#10b981'],
+                        borderRadius: 6,
+                        data: [78, 42, 65, 31]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { min: 0, max: 100, grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Chart 2: Login Frequency Doughnut configuration
+            const ctxFrequency = document.getElementById('chart-login-frequency').getContext('2d');
+            charts.frequency = new Chart(ctxFrequency, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Daily Users', '2-3x Weekly', 'Weekly Single', 'Monthly Infrequent'],
+                    datasets: [{
+                        backgroundColor: ['#10b981', '#6366f1', '#f59e0b', '#ef4444'],
+                        borderWidth: 0,
+                        data: [35, 40, 18, 7]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { 
+                            position: 'right',
+                            labels: { color: '#9ca3af', font: { size: 10 }, boxWidth: 12 }
+                        } 
+                    },
+                    cutout: '70%'
+                }
+            });
+
+            // Chart 3: Communication Outreach Grouped Bar Configuration
+            const ctxComm = document.getElementById('chart-communication').getContext('2d');
+            charts.communication = new Chart(ctxComm, {
+                type: 'bar',
+                data: {
+                    labels: ['Push Alerts', 'Email Drops', 'In-App Popups'],
+                    datasets: [
+                        {
+                            label: 'Open Rate %',
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 4,
+                            data: [62, 24, 88]
+                        },
+                        {
+                            label: 'CTR %',
+                            backgroundColor: '#ec4899',
+                            borderRadius: 4,
+                            data: [18, 4, 32]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { 
+                            position: 'top', 
+                            labels: { color: '#9ca3af', font: { size: 9 }, boxWidth: 10 } 
+                        } 
+                    },
+                    scales: {
+                        y: { min: 0, max: 100, grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', font: { size: 9 } } },
+                        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 9 } } }
+                    }
+                }
+            });
+
+            // Chart 4: Support Ticket Volume Trend Line Matrix Configuration
+            const ctxTickets = document.getElementById('chart-support-tickets').getContext('2d');
+            charts.tickets = new Chart(ctxTickets, {
+                type: 'line',
+                data: {
+                    labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7'],
+                    datasets: [
+                        {
+                            label: 'Barcode Scanning Errors',
+                            borderColor: '#f43f5e',
+                            backgroundColor: 'rgba(244, 63, 94, 0.05)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 2,
+                            data: [45, 50, 82, 74, 61, 48, 35]
+                        },
+                        {
+                            label: 'Missing Points Claims',
+                            borderColor: '#eab308',
+                            backgroundColor: 'transparent',
+                            tension: 0.3,
+                            borderWidth: 2,
+                            data: [20, 25, 30, 22, 28, 19, 15]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { 
+                            position: 'top', 
+                            labels: { color: '#9ca3af', font: { size: 10 }, boxWidth: 12 } 
+                        } 
+                    },
+                    scales: {
+                        y: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        // Processing controller mapping state adjustments into live DOM mutations
+        function updateDashboardData() {
+            // Retrieve Current User Filter State Selections
+            const dateVal = document.getElementById('filter-date').value;
+            const segmentVal = document.getElementById('filter-segment').value;
+            const cohortVal = document.getElementById('filter-cohort').value;
+
+            // Load Configuration Sets from Database Mock
+            const dateConf = databaseMock.dateFilters[dateVal];
+            const segConf = databaseMock.segments[segmentVal];
+            const cohConf = databaseMock.cohorts[cohortVal];
+
+            // 1. Math computation equations transforming base variables across selected dimensions
+            const finalStickiness = Math.min((segConf.baseStickiness * cohConf.shift * dateConf.scale), 95.5).toFixed(1);
+            const finalDuration = (segConf.baseDuration * cohConf.shift * (1 + (1 - dateConf.scale))).toFixed(1);
+            const finalActivation = Math.min(Math.round(segConf.activation * cohConf.shift), 100);
+            const finalTTV = (segConf.ttv * (2 - cohConf.shift) * (1 / dateConf.scale)).toFixed(1);
+
+            // 2. DOM injection text content shifts
+            document.getElementById('kpi-stickiness').textContent = `${finalStickiness}%`;
+            document.getElementById('kpi-duration').textContent = finalDuration;
+            document.getElementById('kpi-activation').textContent = `${finalActivation}%`;
+            document.getElementById('kpi-ttv').textContent = finalTTV;
+
+            const trendStickiness = document.getElementById('trend-stickiness');
+            trendStickiness.textContent = dateConf.trendText;
+            trendStickiness.className = `flex items-center font-medium ${dateConf.trendColor}`;
+
+            // 3. Funnel Mutation calculations
+            const f1 = 100;
+            const f2 = Math.round(f1 * (finalActivation / 100));
+            const f3 = Math.round(f2 * 0.76);
+            const f4 = Math.round(f3 * (segmentVal === 'grocery' ? 0.82 : 0.55));
+
+            document.getElementById('funnel-v1').textContent = `${f1}%`;
+            document.getElementById('funnel-v2').textContent = `${f2}%`;
+            document.getElementById('funnel-v3').textContent = `${f3}%`;
+            document.getElementById('funnel-v4').textContent = `${f4}%`;
+
+            document.getElementById('funnel-b1').style.width = `${f1}%`;
+            document.getElementById('funnel-b2').style.width = `${f2}%`;
+            document.getElementById('funnel-b3').style.width = `${f3}%`;
+            document.getElementById('funnel-b4').style.width = `${f4}%`;
+
+            // 4. Chart Dataset Array Updates 
+            // Feature Adoption Mutation
+            charts.adoption.data.datasets[0].data = [
+                Math.round(78 * cohConf.shift),
+                Math.round(42 * dateConf.scale),
+                Math.round(65 * cohConf.shift * dateConf.scale),
+                Math.round(31 * (segmentVal === 'grocery' ? 1.8 : 0.9))
+            ];
+            charts.adoption.update();
+
+            // Login Frequency Data Mutation Shift
+            if(cohortVal === 'power') {
+                charts.frequency.data.datasets[0].data = [65, 25, 8, 2];
+            } else if (cohortVal === 'risk') {
+                charts.frequency.data.datasets[0].data = [5, 15, 45, 35];
+            } else {
+                charts.frequency.data.datasets[0].data = [35, 40, 18, 7];
+            }
+            charts.frequency.update();
+
+            // Communication Matrix updates
+            charts.communication.data.datasets[0].data = [
+                Math.round(62 * cohConf.shift), 
+                Math.round(24 * dateConf.scale), 
+                Math.round(88 * cohConf.shift)
+            ];
+            charts.communication.data.datasets[1].data = [
+                Math.round(18 * dateConf.scale), 
+                Math.round(4 * cohConf.shift), 
+                Math.round(32 * cohConf.shift * dateConf.scale)
+            ];
+            charts.communication.update();
+
+            // Line Chart ticket variation trend tracking adjustment computations
+            const baseTicketsLine1 = [45, 50, 82, 74, 61, 48, 35];
+            const baseTicketsLine2 = [20, 25, 30, 22, 28, 19, 15];
+            
+            charts.tickets.data.datasets[0].data = baseTicketsLine1.map(val => Math.round(val * dateConf.ticketsMultiplier * (segmentVal === 'electronics' ? 1.5 : 1.0)));
+            charts.tickets.data.datasets[1].data = baseTicketsLine2.map(val => Math.round(val * dateConf.ticketsMultiplier * (cohortVal === 'new' ? 1.4 : 1.0)));
+            charts.tickets.update();
+
+            // 5. Reactive Table Filtering Logic Rendering
+            const tableBody = document.getElementById('risk-table-body');
+            tableBody.innerHTML = ''; // wipe historical element layers
+
+            let filteredPool = accountDataPool;
+            if (segmentVal !== 'all') {
+                filteredPool = filteredPool.filter(item => item.segment.toLowerCase() === segmentVal);
+            }
+
+            document.getElementById('risk-count').textContent = `${filteredPool.length} store accounts flagged at risk`;
+
+            if(filteredPool.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500 font-medium">No store locations flag risk constraints within current filtered criteria.</td></tr>`;
+            } else {
+                filteredPool.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-gray-850/40 transition duration-150";
+                    tr.innerHTML = `
+                        <td class="py-3 px-4 font-medium text-white">${row.id}</td>
+                        <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-gray-800 text-gray-300 border border-gray-700">${row.segment}</span></td>
+                        <td class="py-3 px-4 text-center">
+                            <div class="flex items-center justify-center gap-1.5">
+                                <div class="w-16 bg-gray-800 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-rose-500 h-full" style="width: ${row.score}%"></div>
+                                </div>
+                                <span class="font-semibold text-rose-400 w-6 text-right">${row.score}</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 text-right font-semibold text-rose-500">${row.change}</td>
+                        <td class="py-3 px-4 text-right text-gray-400 font-normal italic">${row.issue}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+        }
     </script>
 </body>
 </html>
