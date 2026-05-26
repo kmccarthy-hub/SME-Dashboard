@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Engagement Dashboard | Loyalty Platform</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+    
+    <!-- Google Fonts for Premium Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* Dark Mode with Premium Aesthetic */
+        :root {
+            --bg-primary: #0f1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --border-color: #30363d;
+            --accent-primary: #58a6ff;
+            --accent-secondary: #79c0ff;
+            --accent-success: #3fb950;
+            --accent-warning: #d29922;
+            --accent-danger: #f85149;
+            --accent-purple: #bc8ef8;
+            --accent-cyan: #56d4dd;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #0c0f13 100%);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+        
+        /* Subtle grid pattern background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(0deg, transparent 24%, rgba(88, 166, 255, 0.05) 25%, rgba(88, 166, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(88, 166, 255, 0.05) 75%, rgba(88, 166, 255, 0.05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(88, 166, 255, 0.05) 25%, rgba(88, 166, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(88, 166, 255, 0.05) 75%, rgba(88, 166, 255, 0.05) 76%, transparent 77%, transparent);
+            background-size: 80px 80px;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Smooth scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+        
+        /* Premium Card Design */
+        .premium-card {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .premium-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(88, 166, 255, 0.3), transparent);
+            pointer-events: none;
+        }
+        
+        .premium-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(88, 166, 255, 0.1);
+        }
+        
+        /* Metric Cards */
+        .metric-card {
+            padding: 24px;
+        }
+        
+        .metric-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .metric-change {
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .metric-change.positive {
+            color: var(--accent-success);
+        }
+        
+        .metric-change.negative {
+            color: var(--accent-danger);
+        }
+        
+        /* Filter Button Styles */
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--accent-primary);
+            background: var(--bg-tertiary);
+        }
+        
+        .filter-btn.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: var(--bg-primary);
+        }
+        
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 0;
+        }
+        
+        .full-height-chart {
+            height: 100%;
+        }
+        
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .section-header svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-primary);
+        }
+        
+        /* Funnel Chart */
+        .funnel-item {
+            margin-bottom: 16px;
+        }
+        
+        .funnel-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .funnel-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            min-width: 160px;
+            white-space: nowrap;
+        }
+        
+        .funnel-percentage {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            min-width: 40px;
+            text-align: right;
+        }
+        
+        .funnel-bar-container {
+            flex: 1;
+            height: 28px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .funnel-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+        }
+        
+        /* At-Risk Table */
+        .risk-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        
+        .risk-table thead {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .risk-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+        
+        .risk-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .risk-table tr:hover {
+            background-color: rgba(88, 166, 255, 0.05);
+        }
+        
+        .risk-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .risk-badge.critical {
+            background-color: rgba(248, 81, 73, 0.15);
+            color: var(--accent-danger);
+        }
+        
+        .risk-badge.warning {
+            background-color: rgba(210, 153, 34, 0.15);
+            color: var(--accent-warning);
+        }
+        
+        /* Engagement Score Ring */
+        .engagement-score-ring {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            margin: 0 auto 20px;
+        }
+        
+        .engagement-score-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .engagement-score-value .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent-success);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .engagement-score-value .unit {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        /* Animations */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(88, 166, 255, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(88, 166, 255, 0.5);
+            }
+        }
+        
+        .animate-slide-up {
+            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .animate-slide-left {
+            animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .card-1 { animation-delay: 0.1s; }
+        .card-2 { animation-delay: 0.2s; }
+        .card-3 { animation-delay: 0.3s; }
+        .card-4 { animation-delay: 0.4s; }
+        .card-5 { animation-delay: 0.5s; }
+        .card-6 { animation-delay: 0.6s; }
+        
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .metric-value {
+                font-size: 24px;
+            }
+            
+            .section-header h2 {
+                font-size: 16px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .metric-card {
+                padding: 16px;
+            }
+            
+            .metric-value {
+                font-size: 20px;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+        }
+        
+        /* Header styling */
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+        }
+        
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 24px 32px;
+        }
+        
+        .header-title h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            margin-bottom: 8px;
+        }
+        
+        .header-title p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        
+        /* Filter section styling */
+        .filter-section {
+            margin-top: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .filter-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .filter-group .filter-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        /* Main content area */
+        .dashboard-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .dashboard-grid.large-cards {
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        }
+        
+        .section-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        /* Stat badge */
+        .stat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background-color: rgba(88, 166, 255, 0.1);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-secondary);
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header sticky top-0 z-50">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>Customer Engagement Dashboard</h1>
+                <p>Real-time insights into loyalty app adoption, engagement, and customer journey progression</p>
+            </div>
+            
+            <!-- Filters -->
+            <div class="filter-section">
+                <!-- Date Range Filter -->
+                <div class="filter-group">
+                    <label>Date Range</label>
+                    <div class="filter-options">
+                        <button class="filter-btn active" data-filter="dateRange" data-value="7">Last 7 Days</button>
+                        <button class="filter-btn" data-filter="dateRange" data-value="30">Last 30 Days</button>
+                        <button class="filter-btn" data-filter="dateRange" data-value="90">Last 90 Days</button>
+                    </div>
+                </div>
+                
+                <!-- Retailer Segment Filter -->
+                <div class="filter-group">
+                    <label>Retailer Segment</label>
+                    <div class="filter-options">
+                        <button class="filter-btn active" data-filter="segment" data-value="all">All Segments</button>
+                        <button class="filter-btn" data-filter="segment" data-value="grocery">Grocery</button>
+                        <button class="filter-btn" data-filter="segment" data-value="fashion">Fashion</button>
+                        <button class="filter-btn" data-filter="segment" data-value="electronics">Electronics</button>
+                    </div>
+                </div>
+                
+                <!-- User Cohort Filter -->
+                <div class="filter-group">
+                    <label>User Cohort</label>
+                    <div class="filter-options">
+                        <button class="filter-btn active" data-filter="cohort" data-value="all">All Users</button>
+                        <button class="filter-btn" data-filter="cohort" data-value="new">New Users</button>
+                        <button class="filter-btn" data-filter="cohort" data-value="power">Power Shoppers</button>
+                        <button class="filter-btn" data-filter="cohort" data-value="churn">Churn-Risk</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+        <!-- Key Metrics Row -->
+        <div class="dashboard-grid large-cards">
+            <!-- DAU/MAU Metric -->
+            <div class="premium-card metric-card animate-slide-up card-1">
+                <div class="metric-label">Stickiness (DAU/MAU)</div>
+                <div class="metric-value" id="metric-stickiness">32.5%</div>
+                <div class="metric-change positive">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                        <polyline points="17 6 23 6 23 12"></polyline>
+                    </svg>
+                    <span>+4.2% from last week</span>
+                </div>
+            </div>
+
+            <!-- Average Session Duration Metric -->
+            <div class="premium-card metric-card animate-slide-up card-2">
+                <div class="metric-label">Avg Session Duration</div>
+                <div class="metric-value" id="metric-session">4m 32s</div>
+                <div class="metric-change positive">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                        <polyline points="17 6 23 6 23 12"></polyline>
+                    </svg>
+                    <span>+18 seconds vs avg</span>
+                </div>
+            </div>
+
+            <!-- Activation Rate Metric -->
+            <div class="premium-card metric-card animate-slide-up card-3">
+                <div class="metric-label">Activation Rate</div>
+                <div class="metric-value" id="metric-activation">61.4%</div>
+                <div class="metric-change positive">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                        <polyline points="17 6 23 6 23 12"></polyline>
+                    </svg>
+                    <span>+3.8% this period</span>
+                </div>
+            </div>
+
+            <!-- Time-to-Value Metric -->
+            <div class="premium-card metric-card animate-slide-up card-4">
+                <div class="metric-label">Time-to-Value (TTV)</div>
+                <div class="metric-value" id="metric-ttv">2.4d</div>
+                <div class="metric-change positive">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                        <polyline points="17 18 23 18 23 12"></polyline>
+                    </svg>
+                    <span>-0.3 days faster</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Adoption & Engagement Score Row -->
+        <div class="section-row">
+            <!-- Feature Adoption -->
+            <div class="premium-card animate-slide-up card-5" style="padding: 24px;">
+                <div class="section-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <h2>Feature Adoption Rates</h2>
+                </div>
+                
+                <div id="featureAdoptionContainer">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Engagement Score -->
+            <div class="premium-card animate-slide-up card-6" style="padding: 24px;">
+                <div class="section-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <h2>Engagement Score</h2>
+                </div>
+                
+                <div class="engagement-score-ring">
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                        <!-- Background ring -->
+                        <circle cx="60" cy="60" r="50" fill="none" stroke="var(--bg-tertiary)" stroke-width="8"></circle>
+                        <!-- Progress ring -->
+                        <circle id="engagementRing" cx="60" cy="60" r="50" fill="none" stroke="var(--accent-success)" stroke-width="8"
+                            stroke-linecap="round" style="stroke-dasharray: 314; stroke-dashoffset: 94; transform: rotate(-90deg); transform-origin: 60px 60px; transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></circle>
+                    </svg>
+                    <div class="engagement-score-value">
+                        <div class="value" id="engagementScoreValue">72</div>
+                        <div class="unit">/ 100</div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center;">
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+                        Based on login frequency, feature usage, and redemption activity
+                    </p>
+                    <div class="stat-badge">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                            <polyline points="17 6 23 6 23 12"></polyline>
+                        </svg>
+                        Healthy Status
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Journey & Push Notification Row -->
+        <div class="section-row">
+            <!-- Funnel Chart -->
+            <div class="premium-card animate-slide-up card-1" style="padding: 24px;">
+                <div class="section-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 3h16v5H4z"></path>
+                        <path d="M6 8h12v5H6z"></path>
+                        <path d="M8 13h8v5H8z"></path>
+                        <path d="M10 18h4v5h-4z"></path>
+                    </svg>
+                    <h2>Milestone Completion Funnel</h2>
+                </div>
+                
+                <div id="funnelContainer">
+                    <!-- Populated by JavaScript -->
+                </div>
+                
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">Total Conversions</p>
+                    <p style="font-size: 18px; font-weight: 700; color: var(--accent-success);">18,450 users</p>
+                </div>
+            </div>
+
+            <!-- Push Notification & Communication -->
+            <div class="premium-card animate-slide-up card-2" style="padding: 24px;">
+                <div class="section-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <h2>Communication Effectiveness</h2>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <!-- Push Notification -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                            <p style="font-size: 13px; color: var(--text-secondary);">Push Notification Open Rate</p>
+                            <span style="font-size: 18px; font-weight: 700; color: var(--accent-primary); font-family: 'JetBrains Mono', monospace;" id="pushOpenRate">38.2%</span>
+                        </div>
+                        <div style="height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; border: 1px solid var(--border-color);">
+                            <div id="pushOpenBar" style="height: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); width: 38.2%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Email Open Rate -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                            <p style="font-size: 13px; color: var(--text-secondary);">Email Open Rate</p>
+                            <span style="font-size: 18px; font-weight: 700; color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace;" id="emailOpenRate">24.7%</span>
+                        </div>
+                        <div style="height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; border: 1px solid var(--border-color);">
+                            <div id="emailOpenBar" style="height: 100%; background: linear-gradient(90deg, var(--accent-cyan), #2dd4bf); width: 24.7%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- In-App Message CTR -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                            <p style="font-size: 13px; color: var(--text-secondary);">In-App Message CTR</p>
+                            <span style="font-size: 18px; font-weight: 700; color: var(--accent-purple); font-family: 'JetBrains Mono', monospace;" id="inAppCtr">52.6%</span>
+                        </div>
+                        <div style="height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; border: 1px solid var(--border-color);">
+                            <div id="inAppCtrBar" style="height: 100%; background: linear-gradient(90deg, var(--accent-purple), #c084fc); width: 52.6%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row - Support Tickets & Retention -->
+        <div class="section-row">
+            <!-- Support Ticket Trends -->
+            <div class="premium-card animate-slide-up card-3" style="padding: 24px;">
+                <div class="section-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        <line x1="9" y1="10" x2="15" y2="10"></line>
+                        <line x1="9" y1="14" x2="15" y2="14"></line>
+                    </svg>
+                    <h2>Support Ticket Trends</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="supportTicketsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Login Frequency & Retention -->
+            <div class="premium-card animate-slide-up card-4" style="padding: 24px;">
+                <div class="section-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="1" x2="16" y2="5"></line>
+                        <line x1="8" y1="1" x2="8" y2="5"></line>
+                        <line x1="3" y1="9" x2="21" y2="9"></line>
+                    </svg>
+                    <h2>Login Frequency</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="loginFrequencyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- At-Risk Indicators Table -->
+        <div class="premium-card animate-slide-up card-5" style="padding: 24px;">
+            <div class="section-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h2>At-Risk Retail Accounts (Engagement Drop >20%)</h2>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table class="risk-table">
+                    <thead>
+                        <tr>
+                            <th>Store Name</th>
+                            <th>Segment</th>
+                            <th>Users</th>
+                            <th>Engagement Drop</th>
+                            <th>Avg Session Time</th>
+                            <th>Risk Level</th>
+                            <th>Last Active</th>
+                        </tr>
+                    </thead>
+                    <tbody id="riskTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ==========================================
+        // DASHBOARD STATE & FILTERS
+        // ==========================================
+        
+        let dashboardState = {
+            filters: {
+                dateRange: '7',
+                segment: 'all',
+                cohort: 'all'
+            },
+            data: {}
+        };
+
+        // Mock data generator with seed for consistency
+        function generateMockData(filters) {
+            const dateRange = parseInt(filters.dateRange);
+            const segment = filters.segment;
+            const cohort = filters.cohort;
+            
+            // Base multipliers based on filters
+            let baseMult = 1;
+            if (cohort === 'power') baseMult = 1.8;
+            if (cohort === 'new') baseMult = 0.6;
+            if (cohort === 'churn') baseMult = 0.4;
+            
+            if (segment === 'grocery') baseMult *= 1.2;
+            if (segment === 'fashion') baseMult *= 1.1;
+            if (segment === 'electronics') baseMult *= 1.15;
+            
+            const timeMultiplier = dateRange === 30 ? 1.1 : dateRange === 90 ? 1.2 : 1;
+            
+            return {
+                stickiness: Math.min(32.5 * baseMult * timeMultiplier, 85),
+                sessionDuration: Math.round(272 * baseMult * timeMultiplier), // seconds
+                activationRate: Math.min(61.4 + (baseMult * 10), 95),
+                timeToValue: Math.max(2.4 - (baseMult * 0.3), 0.8),
+                engagement: Math.round(72 * baseMult),
+                
+                // Feature adoption rates
+                features: {
+                    'Digital Receipts': Math.min(45 + (baseMult * 15), 92),
+                    'Store Locator': Math.min(38 + (baseMult * 12), 88),
+                    'Points Tracker': Math.min(67 + (baseMult * 10), 95)
+                },
+                
+                // Funnel data
+                funnel: [
+                    { label: 'App Downloaded', value: 250000, percent: 100 },
+                    { label: 'Account Created', value: 165000, percent: 66 },
+                    { label: 'First Scan Completed', value: 98500, percent: 39.4 },
+                    { label: 'First Discount Earned', value: 18450, percent: 7.4 }
+                ],
+                
+                // Communication metrics
+                pushOpenRate: 38.2 + (baseMult * 8),
+                emailOpenRate: 24.7 + (baseMult * 5),
+                inAppCtr: 52.6 + (baseMult * 10),
+                
+                // Support data
+                supportTickets: generateSupportTrendData(dateRange),
+                loginFrequency: generateLoginFrequencyData(dateRange),
+                
+                // At-risk accounts
+                atRiskAccounts: generateAtRiskData(segment, cohort)
+            };
+        }
+
+        function generateSupportTrendData(days) {
+            const labels = [];
+            const data = [];
+            for (let i = days; i > 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                data.push(Math.floor(Math.random() * 45 + 15));
+            }
+            return { labels, data };
+        }
+
+        function generateLoginFrequencyData(days) {
+            const labels = [];
+            const userData = [];
+            for (let i = days; i > 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                userData.push(Math.floor(Math.random() * 8000 + 12000));
+            }
+            return { labels, userData };
+        }
+
+        function generateAtRiskData(segment, cohort) {
+            const stores = [
+                { name: 'Sunset Market (Downtown)', seg: 'grocery', users: 12450 },
+                { name: 'Urban Fashion Hub', seg: 'fashion', users: 8200 },
+                { name: 'Tech Store (Mall)', seg: 'electronics', users: 5600 },
+                { name: 'Local Mart Express', seg: 'grocery', users: 9800 },
+                { name: 'Style Outlet', seg: 'fashion', users: 4300 },
+                { name: 'Electronics Plus', seg: 'electronics', users: 7100 }
+            ];
+
+            return stores
+                .filter(s => segment === 'all' || s.seg === segment)
+                .map((store, idx) => ({
+                    name: store.name,
+                    segment: store.seg.charAt(0).toUpperCase() + store.seg.slice(1),
+                    users: store.users,
+                    drop: Math.floor(Math.random() * 15 + 21),
+                    sessionTime: Math.round(Math.random() * 2 + 1.5),
+                    riskLevel: idx % 2 === 0 ? 'critical' : 'warning',
+                    lastActive: `${Math.floor(Math.random() * 5 + 1)}d ago`
+                }))
+                .slice(0, 5);
+        }
+
+        // ==========================================
+        // FILTER HANDLING
+        // ==========================================
+        
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filterType = this.dataset.filter;
+                const filterValue = this.dataset.value;
+
+                // Remove active class from siblings
+                this.parentElement.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+
+                // Add active class to clicked button
+                this.classList.add('active');
+
+                // Update state
+                dashboardState.filters[filterType] = filterValue;
+
+                // Refresh dashboard
+                updateDashboard();
+            });
+        });
+
+        // ==========================================
+        // DASHBOARD UPDATE LOGIC
+        // ==========================================
+        
+        function updateDashboard() {
+            // Generate new data based on filters
+            dashboardState.data = generateMockData(dashboardState.filters);
+
+            // Update metrics
+            updateMetrics();
+            updateFeatureAdoption();
+            updateEngagementScore();
+            updateFunnel();
+            updateCommunicationMetrics();
+            updateSupportChart();
+            updateLoginFrequencyChart();
+            updateAtRiskTable();
+        }
+
+        function updateMetrics() {
+            const data = dashboardState.data;
+
+            // Stickiness
+            const stickinessEl = document.getElementById('metric-stickiness');
+            stickinessEl.textContent = data.stickiness.toFixed(1) + '%';
+
+            // Session Duration
+            const minutes = Math.floor(data.sessionDuration / 60);
+            const seconds = data.sessionDuration % 60;
+            document.getElementById('metric-session').textContent = `${minutes}m ${seconds}s`;
+
+            // Activation Rate
+            document.getElementById('metric-activation').textContent = data.activationRate.toFixed(1) + '%';
+
+            // Time-to-Value
+            document.getElementById('metric-ttv').textContent = data.timeToValue.toFixed(1) + 'd';
+        }
+
+        function updateFeatureAdoption() {
+            const container = document.getElementById('featureAdoptionContainer');
+            const features = dashboardState.data.features;
+
+            let html = '';
+            Object.entries(features).forEach((entry, idx) => {
+                const [name, adoption] = entry;
+                const colors = ['var(--accent-primary)', 'var(--accent-cyan)', 'var(--accent-purple)'];
+                const color = colors[idx];
+
+                html += `
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 13px; color: var(--text-secondary);">${name}</span>
+                            <span style="font-size: 13px; font-weight: 600; color: var(--text-primary); font-family: 'JetBrains Mono', monospace;">${adoption.toFixed(1)}%</span>
+                        </div>
+                        <div style="height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; border: 1px solid var(--border-color);">
+                            <div style="height: 100%; background: ${color}; width: ${adoption}%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function updateEngagementScore() {
+            const score = dashboardState.data.engagement;
+            document.getElementById('engagementScoreValue').textContent = score;
+
+            // Calculate ring offset (314 = 2 * π * 50)
+            const offset = 314 * (1 - score / 100);
+            document.getElementById('engagementRing').style.strokeDashoffset = offset;
+        }
+
+        function updateFunnel() {
+            const container = document.getElementById('funnelContainer');
+            const funnel = dashboardState.data.funnel;
+            const colors = ['var(--accent-primary)', 'var(--accent-secondary)', 'var(--accent-cyan)', 'var(--accent-purple)'];
+
+            let html = '';
+            funnel.forEach((item, idx) => {
+                html += `
+                    <div class="funnel-item">
+                        <div class="funnel-bar">
+                            <div class="funnel-label">${item.label}</div>
+                            <div class="funnel-percentage">${item.percent.toFixed(1)}%</div>
+                            <div class="funnel-bar-container">
+                                <div class="funnel-fill" style="width: ${item.percent}%; background: linear-gradient(90deg, ${colors[idx]}, rgba(88, 166, 255, 0.3));">
+                                    ${item.value.toLocaleString()}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function updateCommunicationMetrics() {
+            const data = dashboardState.data;
+
+            document.getElementById('pushOpenRate').textContent = data.pushOpenRate.toFixed(1) + '%';
+            document.getElementById('pushOpenBar').style.width = data.pushOpenRate + '%';
+
+            document.getElementById('emailOpenRate').textContent = data.emailOpenRate.toFixed(1) + '%';
+            document.getElementById('emailOpenBar').style.width = data.emailOpenRate + '%';
+
+            document.getElementById('inAppCtr').textContent = data.inAppCtr.toFixed(1) + '%';
+            document.getElementById('inAppCtrBar').style.width = data.inAppCtr + '%';
+        }
+
+        function updateAtRiskTable() {
+            const tbody = document.getElementById('riskTableBody');
+            const accounts = dashboardState.data.atRiskAccounts;
+
+            let html = '';
+            accounts.forEach(account => {
+                html += `
+                    <tr>
+                        <td><strong>${account.name}</strong></td>
+                        <td>${account.segment}</td>
+                        <td>${account.users.toLocaleString()}</td>
+                        <td>
+                            <span style="color: var(--accent-danger); font-weight: 600; font-family: 'JetBrains Mono', monospace;">
+                                -${account.drop}%
+                            </span>
+                        </td>
+                        <td>${account.sessionTime.toFixed(1)}m</td>
+                        <td>
+                            <span class="risk-badge ${account.riskLevel}">
+                                ${account.riskLevel === 'critical' ? '🔴 Critical' : '⚠️ Warning'}
+                            </span>
+                        </td>
+                        <td style="color: var(--text-secondary);">${account.lastActive}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // ==========================================
+        // CHARTS
+        // ==========================================
+        
+        const chartDefaults = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: {
+                        color: 'var(--text-secondary)',
+                        font: { size: 12, weight: '500' },
+                        padding: 20
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: 'var(--text-secondary)',
+                        font: { size: 11 }
+                    },
+                    grid: {
+                        color: 'var(--border-color)',
+                        drawBorder: false
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: 'var(--text-secondary)',
+                        font: { size: 11 }
+                    },
+                    grid: {
+                        display: false,
+                        drawBorder: false
+                    }
+                }
+            }
+        };
+
+        let supportChart = null;
+        let loginChart = null;
+
+        function updateSupportChart() {
+            const ctx = document.getElementById('supportTicketsChart').getContext('2d');
+            const supportData = dashboardState.data.supportTickets;
+
+            if (supportChart) {
+                supportChart.data.labels = supportData.labels;
+                supportChart.data.datasets[0].data = supportData.data;
+                supportChart.update();
+            } else {
+                supportChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: supportData.labels,
+                        datasets: [
+                            {
+                                label: 'Support Tickets',
+                                data: supportData.data,
+                                borderColor: 'var(--accent-primary)',
+                                backgroundColor: 'rgba(88, 166, 255, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 4,
+                                pointBackgroundColor: 'var(--accent-primary)',
+                                pointBorderColor: 'var(--bg-secondary)',
+                                pointBorderWidth: 2,
+                                pointHoverRadius: 6
+                            }
+                        ]
+                    },
+                    options: {
+                        ...chartDefaults,
+                        plugins: {
+                            ...chartDefaults.plugins,
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+        }
+
+        function updateLoginFrequencyChart() {
+            const ctx = document.getElementById('loginFrequencyChart').getContext('2d');
+            const loginData = dashboardState.data.loginFrequency;
+
+            if (loginChart) {
+                loginChart.data.labels = loginData.labels;
+                loginChart.data.datasets[0].data = loginData.userData;
+                loginChart.update();
+            } else {
+                loginChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: loginData.labels,
+                        datasets: [
+                            {
+                                label: 'Active Users',
+                                data: loginData.userData,
+                                backgroundColor: 'var(--accent-success)',
+                                borderColor: 'var(--accent-success)',
+                                borderWidth: 0,
+                                borderRadius: 6,
+                                hoverBackgroundColor: 'var(--accent-secondary)'
+                            }
+                        ]
+                    },
+                    options: {
+                        ...chartDefaults,
+                        plugins: {
+                            ...chartDefaults.plugins,
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+        }
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        
+        // Initialize dashboard on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDashboard();
+        });
+    </script>
+</body>
+</html>
